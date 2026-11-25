@@ -594,7 +594,7 @@ DISTFILES += \
     shaders/spectrogram.vert \
     style.astylerc
 
-ICON = icons/white.icns
+ICON = icons/audio-tools.icns
 win32:RC_ICONS = icons/white.ico
 
 

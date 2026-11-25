@@ -7,7 +7,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>Created by Qt/QMake</string>
 	<key>CFBundleIconFile</key>
-	<string>white.icns</string>
+	<string>audio-tools.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>app.lightdmx.audiotools</string>
 	<key>CFBundleInfoDictionaryVersion</key>
