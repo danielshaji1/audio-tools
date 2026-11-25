@@ -63,7 +63,7 @@ Popup {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         Layout.fillWidth: true
                         font.pointSize: 20
-                        text: qsTr("Open Sound Meter %1").arg(appVersion)
+                        text: qsTr("%1 %2").arg(Qt.application.displayName).arg(appVersion)
                     }
 
                     Label {

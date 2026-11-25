@@ -594,7 +594,7 @@ DISTFILES += \
     shaders/spectrogram.vert \
     style.astylerc
 
-ICON = icons/audio-tools.icns
+ICON = icons/white.icns
 win32:RC_ICONS = icons/white.ico
 
 
@@ -607,3 +607,6 @@ include(PVS-Studio.pri)
 SOURCES += src/service/servicedesk.cpp
 HEADERS += src/service/servicedesk.h
 macx:LIBS += -framework CoreFoundation
+SOURCES += src/service/reportsettings.cpp
+HEADERS += src/service/reportsettings.h
+macx:LIBS += -framework Security

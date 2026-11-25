@@ -384,6 +384,12 @@ Item {
         }
     }
 
+    Loader {
+        anchors.fill: parent
+        active: chart.type === "RT60" || chart.type === "Service Timeline"
+        sourceComponent: SessionChart { decay: chart.type === "RT60" }
+    }
+
     DropDown {
         anchors.top: parent.top
         anchors.right: parent.right
@@ -391,8 +397,8 @@ Item {
         implicitHeight: Material.buttonHeight
         background: null
         model: applicationAppearance.experimentFunctions ?
-                   ["Spectrum", "Magnitude", "Phase", "Impulse", "Step", "Coherence", "Group Delay", "Phase Delay", "Spectrogram", "Level", "Numeric", "Crest Factor", "Nyquist"] :
-                   ["Spectrum", "Magnitude", "Phase", "Impulse", "Step", "Coherence", "Group Delay", "Spectrogram", "Level", "Numeric"]
+                   ["Spectrum", "Magnitude", "Phase", "Impulse", "Step", "Coherence", "Group Delay", "Phase Delay", "Spectrogram", "Level", "Numeric", "RT60", "Service Timeline", "Crest Factor", "Nyquist"] :
+                   ["Spectrum", "Magnitude", "Phase", "Impulse", "Step", "Coherence", "Group Delay", "Spectrogram", "Level", "Numeric", "RT60", "Service Timeline"]
         currentIndex: model.indexOf(type)
         onCurrentIndexChanged: {
             var pb = applicationWindow.properiesbar;

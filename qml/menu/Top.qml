@@ -218,6 +218,11 @@ MenuBar {
     Menu {
         title: qsTr("&View")
         MenuItem {
+            text: qsTr("Reporting Preferences…")
+            shortcut: "Ctrl+,"
+            onTriggered: applicationWindow.properiesbar.open(null, "qrc:/ReportPreferences.qml")
+        }
+        MenuItem {
             id: darkModeSelect
             text: qsTr("&Dark Mode")
             shortcut: "Ctrl+D"

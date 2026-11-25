@@ -15,6 +15,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <cmath>
+
 #include "meterplot.h"
 #include "sourcelist.h"
 #include "measurement.h"//TODO: meta::measurement
@@ -33,11 +35,10 @@ const std::map<MeterPlot::Type, QString> MeterPlot::m_typesMap = {
 };
 
 MeterPlot::MeterPlot(QObject *parent) : QObject(parent), LevelObject(),
-    m_source(nullptr), m_sourceList(nullptr), m_settings(nullptr), m_timer(this), m_type(RMS), m_threshold(0),
+    m_source(nullptr), m_sourceList(nullptr), m_settings(nullptr), m_timer(this), m_type(RMS),
     m_peakHold(false)
 {
     m_timer.setInterval(1000);
-    connect(this, &MeterPlot::curveChanged, this, &MeterPlot::updateThreshold);
     connect(&m_timer, &QTimer::timeout, this, &MeterPlot::timeReadyRead);
 
     connect(this, &MeterPlot::typeChanged, this, &MeterPlot::titleChanged);
@@ -49,7 +50,6 @@ MeterPlot::MeterPlot(QObject *parent) : QObject(parent), LevelObject(),
     connect(this, &MeterPlot::typeChanged, this, &MeterPlot::sourceNameChanged);
 
     reset();
-    updateThreshold();
 }
 
 QUuid MeterPlot::source() const
@@ -70,6 +70,7 @@ void MeterPlot::setSource(QUuid sourceId)
             connect(m_source.get(), &Abstract::Source::beforeDestroy, this, &MeterPlot::resetSource, Qt::DirectConnection);
             connect(m_source.get(), &Abstract::Source::nameChanged, this, &MeterPlot::sourceNameChanged);
         }
+        reset();
         emit sourceChanged(sourceId);
     }
 }
@@ -215,8 +216,15 @@ void MeterPlot::setSettings(Settings *newSettings)
     setMode(
         m_settings->reactValue<MeterPlot, Chart::LevelObject::Mode>("mode", this, &MeterPlot::modeChanged, mode()).toInt()
     );
-    setThreshold(
-        m_settings->reactValue<MeterPlot, float>("threshold", this, &MeterPlot::thresholdChanged, threshold()).toFloat()
+    bool hasLegacyThreshold = false;
+    const float legacyThreshold = m_settings->value("threshold").toFloat(&hasLegacyThreshold);
+    const float redDefault = hasLegacyThreshold && std::isfinite(legacyThreshold) ? legacyThreshold : redThreshold();
+    setRedThreshold(
+        m_settings->reactValue<MeterPlot, float>("redThreshold", this, &MeterPlot::redThresholdChanged, redDefault).toFloat()
+    );
+    setYellowThreshold(
+        m_settings->reactValue<MeterPlot, float>("yellowThreshold", this, &MeterPlot::yellowThresholdChanged,
+                                               redThreshold() - 5).toFloat()
     );
     setPause(
         m_settings->reactValue<MeterPlot, bool>("pause", this, &MeterPlot::pauseChanged, pause()).toBool()
@@ -241,17 +249,41 @@ void MeterPlot::setSourceList(SourceList *sourceList)
     }
 }
 
-float MeterPlot::threshold() const
+bool MeterPlot::showThresholds() const
 {
-    return m_threshold;
+    return m_type != Time && m_type != THDN && m_type != Delay;
+}
+
+float MeterPlot::yellowThreshold() const
+{
+    return m_yellowThreshold;
+}
+
+void MeterPlot::setYellowThreshold(float threshold)
+{
+    if (std::isfinite(threshold) && !qFuzzyCompare(m_yellowThreshold, threshold)) {
+        m_yellowThreshold = threshold;
+        emit yellowThresholdChanged(m_yellowThreshold);
+    }
+}
+
+float MeterPlot::redThreshold() const
+{
+    return m_redThreshold;
+}
+
+void MeterPlot::setRedThreshold(float threshold)
+{
+    if (std::isfinite(threshold) && !qFuzzyCompare(m_redThreshold, threshold)) {
+        m_redThreshold = threshold;
+        emit redThresholdChanged(m_redThreshold);
+    }
 }
 
 void MeterPlot::setThreshold(float threshold)
 {
-    if (!qFuzzyCompare(m_threshold, threshold)) {
-        m_threshold = threshold;
-        emit thresholdChanged(m_threshold);
-    }
+    setYellowThreshold(threshold - 5);
+    setRedThreshold(threshold);
 }
 
 QVariant MeterPlot::getAvailableTypes() const
@@ -294,23 +326,6 @@ void MeterPlot::setTime(const QString &time)
         break;
     default:
         LevelObject::setTime(time);
-        break;
-    }
-}
-
-void MeterPlot::updateThreshold()
-{
-    switch (curve()) {
-
-    case Weighting::A:
-    case Weighting::B:
-    case Weighting::K:
-        setThreshold(99);
-        break;
-
-    case Weighting::C:
-    case Weighting::Z:
-        setThreshold(135);
         break;
     }
 }

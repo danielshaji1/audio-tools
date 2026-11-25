@@ -117,31 +117,57 @@ Item {
                 ToolTip.text: qsTr("integration time")
             }
 
-            FloatSpinBox {
-                id:threshold
-                min: -150
-                max: 150
-                step: 1.0
-                value: dataObject.meter.threshold
-                tooltiptext: qsTr("warning threshold")
-                onValueChanged: dataObject.meter.threshold = value
-                Layout.preferredWidth: wideWidth
-                units: "dB"
-                enabled: dataObject.meter.type !== "Time" &&
-                         dataObject.meter.type !== "THD+N" &&
-                         dataObject.meter.type !== "Gain" &&
-                         dataObject.meter.type !== "Delay"
-
-                Connections {
-                    target: dataObject.meter
-                    function onThresholdChanged() {
-                        threshold.value = dataObject.meter.threshold;
-                    }
-                }
+            Item {
+                Layout.fillWidth: true
             }
         }
 
         RowLayout {
+            Label {
+                text: qsTr("Yellow")
+                enabled: dataObject.meter.showThresholds
+            }
+
+            FloatSpinBox {
+                id: yellowThreshold
+                min: -155
+                max: 150
+                step: 1.0
+                value: dataObject.meter.yellowThreshold
+                tooltiptext: qsTr("Yellow threshold")
+                onValueChanged: dataObject.meter.yellowThreshold = value
+                Layout.preferredWidth: wideWidth
+                units: " dB"
+                enabled: dataObject.meter.showThresholds
+            }
+
+            Label {
+                text: qsTr("Red")
+                enabled: dataObject.meter.showThresholds
+            }
+
+            FloatSpinBox {
+                id: redThreshold
+                min: -150
+                max: 150
+                step: 1.0
+                value: dataObject.meter.redThreshold
+                tooltiptext: qsTr("Red threshold")
+                onValueChanged: dataObject.meter.redThreshold = value
+                Layout.preferredWidth: wideWidth
+                units: " dB"
+                enabled: dataObject.meter.showThresholds
+            }
+
+            Connections {
+                target: dataObject.meter
+                function onYellowThresholdChanged() {
+                    yellowThreshold.value = dataObject.meter.yellowThreshold
+                }
+                function onRedThresholdChanged() {
+                    redThreshold.value = dataObject.meter.redThreshold
+                }
+            }
 
             DropDown {
                 Layout.preferredWidth: narrowWidth

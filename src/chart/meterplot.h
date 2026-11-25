@@ -59,7 +59,9 @@ public:
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString value READ value NOTIFY valueChanged)
     Q_PROPERTY(QString sourceName READ sourceName NOTIFY sourceNameChanged)
-    Q_PROPERTY(float threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(float yellowThreshold READ yellowThreshold WRITE setYellowThreshold NOTIFY yellowThresholdChanged)
+    Q_PROPERTY(float redThreshold READ redThreshold WRITE setRedThreshold NOTIFY redThresholdChanged)
+    Q_PROPERTY(bool showThresholds READ showThresholds NOTIFY typeChanged)
     Q_PROPERTY(bool pause READ pause WRITE setPause NOTIFY pauseChanged)
     Q_PROPERTY(bool peakHold READ peakHold WRITE setPeakHold NOTIFY peakHoldChanged)
 
@@ -73,7 +75,11 @@ public:
     QString value() const;
     QString sourceName() const;
 
-    float threshold() const;
+    bool showThresholds() const;
+    float yellowThreshold() const;
+    void setYellowThreshold(float threshold);
+    float redThreshold() const;
+    void setRedThreshold(float threshold);
     void setThreshold(float threshold);
 
     QVariant getAvailableTypes() const;
@@ -103,7 +109,8 @@ signals:
 
     void sourceChanged(QUuid);
     void valueChanged();
-    void thresholdChanged(float);
+    void yellowThresholdChanged(float);
+    void redThresholdChanged(float);
 
     void typeChanged(QString);
     void titleChanged();
@@ -114,7 +121,6 @@ signals:
     void peakHoldChanged();
 
 private slots:
-    void updateThreshold();
     void resetSource();
     void sourceReadyRead();
     void timeReadyRead();
@@ -132,7 +138,8 @@ private:
     Type m_type;
     math::Leq m_leq;
     QMetaObject::Connection m_sourceConnection;
-    float m_threshold;
+    float m_yellowThreshold = 94;
+    float m_redThreshold = 99;
     bool m_peakHold;
     mutable float m_peakLevel;
 

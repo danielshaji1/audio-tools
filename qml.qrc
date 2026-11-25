@@ -3,6 +3,8 @@
         <file alias="main.qml">qml/main.qml</file>
         <file alias="Generator.qml">qml/Generator.qml</file>
         <file alias="source/Measurement.qml">qml/source/Measurement.qml</file>
+        <file alias="SessionChart.qml">qml/SessionChart.qml</file>
+        <file alias="ReportPreferences.qml">qml/ReportPreferences.qml</file>
         <file alias="Chart.qml">qml/Chart.qml</file>
         <file alias="Charts.qml">qml/Charts.qml</file>
         <file alias="SideBar.qml">qml/SideBar.qml</file>

@@ -1,6 +1,6 @@
-# Audio Tools for macOS
+# Open Sound Meter Modded for macOS
 
-Audio Tools extends [Open Sound Meter](https://github.com/psmokotnin/osm/tree/1e08de2322f5e8849e1ba39e1d3993187a7cc75c) by Pavel Smokotnin and contributors. This independent macOS derivative uses the upstream C++ measurement engine, Qt Quick workspace, Core Audio routing and OpenGL renderer. Original notices are preserved. See LICENSE for the GNU GPL and the notices in fonts/ for font licensing.
+Open Sound Meter Modded extends [Open Sound Meter](https://github.com/psmokotnin/osm/tree/1e08de2322f5e8849e1ba39e1d3993187a7cc75c) by Pavel Smokotnin and contributors. This independent macOS derivative uses the upstream C++ measurement engine, Qt Quick workspace, Core Audio routing and OpenGL renderer. Original notices are preserved. See LICENSE for the GNU GPL and the notices in fonts/ for font licensing.
 
 ## Measure
 
@@ -12,11 +12,13 @@ Enable Target Trace and click its name to edit the native curve. Import addition
 
 ## Sunday service
 
-Open **Service & room…**, choose an active measurement, enter a name and set the rolling interval and alert levels. Green is below yellow. Recording continues when the service window is hidden. Finish the service before disconnecting the interface.
+Choose **Service Timeline** in any plot’s selector, select an active measurement, and click **Record service**. Switching plots keeps the recorder running. **Finish service**, input deactivation, and normal application quit finalize the recording. The archive contains one-second Fast and Slow A-weighted readings, RTA snapshots, and a PDF plotting both levels against elapsed minutes with the service date, input, duration, sample count, and highest sampled levels. **Reports** opens current PDFs or the folder for an older recording.
 
-The app appends timestamped fast and slow A-weighted levels, rolling Leq, and frequency/level pairs to a JSON Lines file once per second. Service and rolling Leq are energy averages of sampled one-second slow readings. Spectrum values are relative digital levels. The summary includes the highest sampled fast reading. After finishing, select an archived service to compose its report in your mail app or reveal the data in Finder. You control sending.
+Use **View → Reporting Preferences…** (⌘,) to enter the leader’s email, enable **Send on stop**, and establish a 6–12 digit PIN. Subsequent changes to the recipient or automatic delivery require that PIN. Preferences are saved in the Mac login Keychain. A previously saved email is offered during initial setup. Apple Mail needs a configured sending account and macOS permission to automate Mail. Failed submissions are queued on disk and retried while the app is open. A successful Mail submission means the message was handed to the local sending account.
 
-For room decay, obtain a clean transfer-function impulse response with measurement and reference channels. **Estimate RT60** uses a broadband, noise-corrected backward energy integral and extrapolates a −5 to −25 dB fit. It rejects inadequate impulse-to-noise ratio and weak linear fits. The impulse capture must be long enough to include the decay and noise floor.
+Choose **RT60** in a plot selector and **Measure RT60** to graph a selected impulse response’s broadband decay. The app fits −5 to −25 dB and extrapolates to 60 dB. Short, noisy or poorly fitted decays show a diagnostic.
+
+Click a **Numeric** meter to edit its yellow and red thresholds in the bottom properties strip. Green covers values below yellow, yellow starts at the first threshold, and red starts at the second. Use OSM’s built-in Numeric Leq mode for equivalent level measurements.
 
 ## Build on macOS
 

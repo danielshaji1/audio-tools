@@ -49,10 +49,16 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            color:
-                dataSource && (dataSource.value > dataSource.threshold) ?
-                    Material.color(Material.Red) :
-                    (dataSource && Number(dataSource.value) >= dataSource.threshold - 5 ? Material.color(Material.Amber) : Material.color(Material.LightGreen))
+            color: {
+                var level = Number(text)
+                if (!dataSource || !dataSource.showThresholds || text === "" || !isFinite(level))
+                    return Material.foreground
+                if (level >= dataSource.redThreshold)
+                    return Material.color(Material.Red)
+                if (level >= dataSource.yellowThreshold)
+                    return Material.color(Material.Yellow)
+                return Material.color(Material.LightGreen)
+            }
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

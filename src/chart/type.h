@@ -23,7 +23,7 @@
 
 namespace Chart {
 
-enum Type {RTA, Magnitude, Phase, Scope, Impulse, Step, Coherence, GroupDelay, PhaseDelay, Spectrogram, CrestFactor, Nyquist, Level, SPL};
+enum Type {RTA, Magnitude, Phase, Scope, Impulse, Step, Coherence, GroupDelay, PhaseDelay, Spectrogram, CrestFactor, Nyquist, Level, SPL, RT60, ServiceTimeline};
 static std::map<Type, QString> typeMap = {
     {RTA,       "Spectrum"},
     {Magnitude, "Magnitude"},
@@ -38,7 +38,9 @@ static std::map<Type, QString> typeMap = {
     {CrestFactor, "Crest Factor"},
     {Nyquist,   "Nyquist"},
     {Level,     "Level"},
-    {SPL,       "Numeric"}
+    {SPL,       "Numeric"},
+    {RT60, "RT60"},
+    {ServiceTimeline, "Service Timeline"}
 };
 }
 #endif // TYPE_H

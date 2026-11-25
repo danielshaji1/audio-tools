@@ -84,7 +84,6 @@ Item {
             }
         }
 
-        Button { text: qsTr("Service & room…"); Layout.fillWidth: true; onClicked: serviceDesk.present() }
         Generator {}
 
         TargetTrace {

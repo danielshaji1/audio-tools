@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(":/fonts/Roboto/BoldItalic.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Roboto/Italic.ttf");
     QFontDatabase::addApplicationFont(":/fonts/osm.ttf");
-    QCoreApplication::setApplicationName("AudioTools");
+    // Keep the internal name used by existing settings and service archives.
+    QCoreApplication::setApplicationName(app.arguments().contains("--smoke-test") ? "AudioToolsSmokeTest" : "AudioTools");
+    QApplication::setApplicationDisplayName(QStringLiteral("Open Sound Meter Modded"));
     QCoreApplication::setApplicationVersion(APP_GIT_VERSION);
     QCoreApplication::setOrganizationName("LightDMX");
     QCoreApplication::setOrganizationDomain("lightdmx.app");
@@ -126,7 +128,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<filesystem::Dialog>("OpenSoundMeter", 1, 0, "FileDialog");
 #endif
     ServiceDesk serviceDesk(sourceList.get());
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, &serviceDesk, &ServiceDesk::shutdown);
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("reportSettings", &serviceDesk.preferences);
     engine.rootContext()->setContextProperty("serviceDesk", &serviceDesk);
 
     engine.rootContext()->setContextProperty("appVersion", QString(APP_GIT_VERSION));
@@ -147,7 +151,8 @@ int main(int argc, char *argv[])
         return -1;
 
     if (app.arguments().contains("--smoke-test")) {
-        serviceDesk.present();
+        auto *root = engine.rootObjects().first();
+        QMetaObject::invokeMethod(root, "checkIntegratedViews");
         QTimer::singleShot(1200, &app, &QCoreApplication::quit);
     }
     return QApplication::exec();

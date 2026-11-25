@@ -100,6 +100,8 @@ void VariableChart::initType()
         newPlot = new LevelPlot(m_settings, this);
         break;
 
+    case RT60:
+    case ServiceTimeline:
     case SPL:
         newPlot = nullptr;
         break;

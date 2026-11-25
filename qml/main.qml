@@ -31,6 +31,10 @@ ApplicationWindow {
     id:applicationWindow
 
     property alias properiesbar: bottomtab
+    function checkIntegratedViews() {
+        charts.checkIntegratedViews()
+        properiesbar.open(null, "qrc:/ReportPreferences.qml")
+    }
     property alias charts: charts
     property alias dataSourceList : righttab
     property alias message : message
@@ -43,7 +47,7 @@ ApplicationWindow {
 
     visible: true
     flags: Qt.Window
-    title: "Audio Tools"
+    title: Qt.application.displayName
     Component.onCompleted: {
         if (applicationAppearance.visibility === Appearance.FullScreen) {
             return ;
@@ -81,7 +85,7 @@ ApplicationWindow {
             return;
         }
 
-        dialog.title = qsTr("Close Open Sound Meter?")
+        dialog.title = qsTr("Close %1?").arg(Qt.application.displayName)
         dialog.accepted.connect(closeAccepted);
         dialog.rejected.connect(closeRejected);
         close.accepted = false;

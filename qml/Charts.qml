@@ -27,6 +27,10 @@ Item {
         chartsLayout.onCountChanged.connect(updateCount);
     }
 
+    function checkIntegratedViews() {
+        first.type = "RT60"
+        second.type = "Service Timeline"
+    }
     function autoHeight() {
         first.height = second.height = third.height = chartsLayout.height / count;
     }
