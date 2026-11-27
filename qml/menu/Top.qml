@@ -76,6 +76,12 @@ MenuBar {
     Menu {
         title: qsTr("&File")
         MenuItem {
+            text: serviceDesk.recording ? "Stop service recording" : "Record service"
+            shortcut: "Ctrl+Shift+R"
+            onTriggered: applicationWindow.toggleRecording()
+        }
+        MenuSeparator {}
+        MenuItem {
             text: qsTr("&New")
             shortcut: StandardKey.New
             onTriggered: {

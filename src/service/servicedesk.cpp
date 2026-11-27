@@ -13,6 +13,17 @@ static bool saveBytes(const QString &path,const QByteArray &bytes) {
     QSaveFile f(path);
     return f.open(QIODevice::WriteOnly) && f.write(bytes)==bytes.size() && f.commit();
 }
+static bool deliverFolder(const QString &archive,const QString &destination){
+    QFile job(archive+"/folder-pending");
+    if(destination.isEmpty() || !QFileInfo(destination).isDir() || !job.open(QIODevice::ReadOnly))return false;
+    auto name=QString::fromUtf8(job.readAll());
+    if(name.isEmpty() || name!=QFileInfo(name).fileName())return false;
+    QFile pdf(archive+"/report.pdf");
+    if(!pdf.open(QIODevice::ReadOnly))return false;
+    if(!saveBytes(QDir(destination).filePath(name),pdf.readAll()))return false;
+    job.close();
+    return QFile::remove(job.fileName());
+}
 static const char mailScript[]=R"OSA(on run argv
     set attachmentFile to POSIX file (item 3 of argv) as alias
     tell application "Mail"
@@ -136,12 +147,26 @@ void ServiceDesk::finish(){
     if(!recording())return;
     timer.stop();timeline.close();
     if(!writeReport()){notify("Could not write the report PDF. The recorded timeline is available in the archive.");return;}
+    if(!preferences.destination().isEmpty()){
+        auto name="Service report "+QFileInfo(folder).fileName()+" "+QUuid::createUuid().toString(QUuid::WithoutBraces).left(8)+".pdf";
+        if(!saveBytes(folder+"/folder-pending",name.toUtf8())){notify("PDF archived locally. Could not queue the shared copy.");return;}
+        notify(deliverFolder(folder,preferences.destination())?"Report saved to the configured folder.":"PDF archived locally. Waiting for the report folder.");
+        return;
+    }
     if(preferences.available() && !preferences.automatic()){notify("Report archived. Automatic email is off in Reporting Preferences.");return;}
     QJsonObject job{{"to",preferences.email()},{"subject",activeTitle+" · "+started.date().toString(Qt::ISODate)}};
     if(!saveBytes(folder+"/pending.json",QJsonDocument(job).toJson())){notify("Report archived, but the delivery queue could not be saved.");return;}
     notify("Report queued for Apple Mail.");retry();
 }
 void ServiceDesk::retry(){
+    if(!preferences.destination().isEmpty()){
+        for(const auto &entry:archives()){
+            const auto path=rootFolder()+"/"+entry;
+            if(QFile::exists(path+"/folder-pending") && deliverFolder(path,preferences.destination()))
+                notify("Queued report saved to the configured folder.");
+        }
+        return;
+    }
     if(!dispatching.isEmpty()||!preferences.automatic())return;
     auto entries=archives();std::reverse(entries.begin(),entries.end());
     for(const auto &entry:entries){

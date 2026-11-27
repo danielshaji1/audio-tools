@@ -19,6 +19,7 @@ Rectangle {
         RowLayout {
             Layout.rightMargin: 150
             ComboBox {
+                visible: panel.decay
                 id: input
                 Layout.preferredWidth: 155
                 enabled: panel.decay || !serviceDesk.recording
@@ -27,22 +28,11 @@ Rectangle {
                 onCurrentIndexChanged: panel.result = ({})
                 Accessible.name: "Measurement source"
             }
-            TextField {
-                id: title
-                visible: !panel.decay
-                Layout.preferredWidth: 140
-                text: "Sunday service"
-                enabled: !serviceDesk.recording
-                Accessible.name: "Service name"
-            }
             Button {
-                text: panel.decay ? "Measure RT60" : serviceDesk.recording ? "Finish service" : "Record service"
-                enabled: input.currentIndex >= 0 || (!panel.decay && serviceDesk.recording)
-                onClicked: {
-                    if (panel.decay) panel.measure()
-                    else if (serviceDesk.recording) serviceDesk.finish()
-                    else serviceDesk.start(title.text, input.model.get(input.currentIndex))
-                }
+                visible: panel.decay
+                text: "Measure RT60"
+                enabled: input.currentIndex >= 0
+                onClicked: panel.measure()
             }
             ToolButton {
                 visible: !panel.decay
@@ -54,7 +44,7 @@ Rectangle {
                         model: serviceDesk.archives
                         MenuItem { text: modelData; onTriggered: serviceDesk.openArchive(modelData) }
                     }
-                    MenuItem { text: "Retry pending email"; onTriggered: serviceDesk.retry() }
+                    MenuItem { text: "Retry pending reports"; onTriggered: serviceDesk.retry() }
                 }
             }
         }

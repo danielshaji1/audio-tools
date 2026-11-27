@@ -25,6 +25,7 @@ import QtQuick.Dialogs 1.2
 import SourceModel 1.0
 import OpenSoundMeter 1.0
 
+import QtQuick.Controls 2.15 as C
 import "menu" as Menu
 
 ApplicationWindow {
@@ -112,6 +113,11 @@ ApplicationWindow {
 
     menuBar: (applicationAppearance.showMenuBar ? topMenu : null)
 
+    function toggleRecording() {
+        if (serviceDesk.recording) serviceDesk.finish()
+        else if (recordSource.currentIndex >= 0) serviceDesk.start(serviceName.text,recordSource.model.get(recordSource.currentIndex))
+    }
+
     GridLayout {
         anchors.fill: parent
         flow: Qt.LeftToRight
@@ -119,6 +125,39 @@ ApplicationWindow {
         columnSpacing: 0
         rowSpacing: 0
 
+        RowLayout {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.leftMargin: 8
+            Layout.preferredHeight: 40
+            C.ToolButton {
+                id: recordButton
+                enabled: serviceDesk.recording || recordSource.currentIndex >= 0
+                text: serviceDesk.recording ? "Stop service" : "Record service"
+                Accessible.name: text
+                contentItem: RowLayout {
+                    Rectangle { width: 12; height: 12; radius: serviceDesk.recording ? 2 : 6; color: "#ff4949" }
+                    C.Label { text: recordButton.text }
+                }
+                onClicked: applicationWindow.toggleRecording()
+            }
+            C.ComboBox {
+                id: recordSource
+                Layout.preferredWidth: 145
+                enabled: !serviceDesk.recording
+                model: SourceModel { list: sourceList; unrollGroups: true }
+                textRole: "title"
+                Accessible.name: "Service measurement source"
+            }
+            C.TextField {
+                id: serviceName
+                Layout.preferredWidth: 145
+                text: "Sunday service"
+                enabled: !serviceDesk.recording
+                Accessible.name: "Service name"
+            }
+            C.Label { Layout.fillWidth: true; text: serviceDesk.status; elide: Text.ElideRight }
+        }
         //Charts area
         Charts {
             id: charts
